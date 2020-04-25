@@ -2,10 +2,15 @@ package xyz.wickc.networkutils.utils;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CookieStringUtils {
+    /**
+     * 将 SetCookie 的集合转换成 Cookie 请求头数据
+     * @param setCookieList SetCookie 响应头 List
+     * @param botCookie Cookie请求头,可以为空字符串!
+     * @return Cookie 请求头字符串
+     */
     public static String getCookieString(List<String> setCookieList,String botCookie){
         StringBuilder stringBuilder = new StringBuilder(botCookie);
         for (int i = 0;i < setCookieList.size();i ++){
@@ -31,13 +36,53 @@ public class CookieStringUtils {
         return cookieStr;
     }
 
+    /**
+     * 将 SetCookie 的集合转换成 Cookie 请求头数据
+     * @param botCookie Cookie请求头,可以为空字符串!
+     * @param cookie SetCookie 响应头 List
+     * @return cookie字符串
+     */
     public static String getCookieString(String botCookie,String ... cookie){
-        List<String> stringList = new ArrayList<>();
-        for (String cookieStr : cookie){
-            stringList.add(cookieStr);
+        List<String> stringList = new ArrayList<>(Arrays.asList(cookie));
+        return getCookieString(stringList,botCookie);
+    }
+
+
+    /**
+     * 通过 Cookie 请求头字符串转换Map
+     * @param cookieStr Cookie请求头
+     * @return CookieMap
+     */
+    public static Map<String,String> toCookieMap(String cookieStr){
+        List<String> cookieList = toCookieList(cookieStr);
+        Map<String,String> cookieMap = new LinkedHashMap<>();
+
+        for (String s : cookieList) {
+            String[] rowCookieString = s.split("=");
+
+//            判断是否是没有值的 Cookie 键
+            if (rowCookieString.length >= 2){
+                cookieMap.put(rowCookieString[0],rowCookieString[1]);
+            }else{
+                cookieMap.put(rowCookieString[0],"");
+            }
         }
 
-        return getCookieString(stringList,botCookie);
+        return cookieMap;
+    }
+
+    /**
+     * 通过Cookie请求头转换成单个Cookie列表
+     * @param cookieStr Cookie 请求头
+     * @return Cookie List
+     */
+    public static List<String> toCookieList(String cookieStr){
+        String[] rowCookieArray = cookieStr.split(";");
+        for (int i = 0; i < rowCookieArray.length; i++) {
+            rowCookieArray[i] = rowCookieArray[i].trim();
+        }
+
+        return Arrays.asList(rowCookieArray);
     }
 
     @Test

@@ -43,4 +43,13 @@ public class DecodeUtils {
 
         return null;
     }
+
+    /**
+     * 解码 BR 压缩类型的数据!
+     * @param bytes 原始压缩数据
+     * @return 解码过后的数据
+     */
+    public static byte[] deCodeBrotliCode(byte[] bytes){
+        return BrotliDecodeUtils.deCodeBrotliRespBody(bytes);
+    }
 }

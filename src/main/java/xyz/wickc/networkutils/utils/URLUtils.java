@@ -1,7 +1,5 @@
 package xyz.wickc.networkutils.utils;
 
-import xyz.wickc.networkutils.domain.RequestData;
-
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;

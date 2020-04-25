@@ -7,5 +7,13 @@ package xyz.wickc.networkutils.domain;
  * @since 1.8
  */
 public enum  RequestMethod {
-    GET,POST
+    /**
+     * GET 方法提交数据
+     */
+    GET,
+
+    /**
+     * Post 方法提交数据
+     */
+    POST
 }

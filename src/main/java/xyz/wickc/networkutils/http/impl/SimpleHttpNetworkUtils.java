@@ -1,7 +1,5 @@
 package xyz.wickc.networkutils.http.impl;
 
-import com.sun.deploy.net.HttpResponse;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,11 +145,11 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
 
     private void outputData(byte[] requestBody,OutputStream connectionOutPutStream) throws IOException{
         OutputStream connectionOutputStream = null;
-        ByteInputStream requestBodyInputStream = null;
+        ByteArrayInputStream requestBodyInputStream = null;
 
         if (requestBody != null && requestBody.length != 0) {
             connectionOutputStream = connectionOutPutStream;
-            requestBodyInputStream = new ByteInputStream(requestBody, requestBody.length);
+            requestBodyInputStream = new ByteArrayInputStream(requestBody);
 
             IOUtils.copy(requestBodyInputStream, connectionOutputStream);
         }

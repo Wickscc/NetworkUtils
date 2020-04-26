@@ -8,8 +8,9 @@ import java.net.*;
 import java.util.Properties;
 
 /**
+ * Created 2020/04/24
+ *
  * @author WicksChen
- * @date 2020/04/24
  */
 public class ConnectionFactory {
     private static Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);

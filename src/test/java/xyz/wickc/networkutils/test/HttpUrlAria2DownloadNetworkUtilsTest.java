@@ -24,7 +24,7 @@ public class HttpUrlAria2DownloadNetworkUtilsTest {
     public void baseTest() throws MalformedURLException {
         HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getHttpNetworkUtils();
 
-        NetworkRequestData requestData = new NetworkRequestData(new URL("http://rrys2019.com"), RequestMethod.GET);
+        NetworkRequestData requestData = new NetworkRequestData(new URL("http://baidu.com"), RequestMethod.GET);
         requestData.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36");
 
         NetworkResponseData networkResponseData = httpNetworkUtils.readPage(requestData);

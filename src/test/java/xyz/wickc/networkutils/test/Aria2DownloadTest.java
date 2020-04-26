@@ -23,7 +23,7 @@ public class Aria2DownloadTest {
 
     @Test
     public void downloadTestFile() {
-        ConnectionFactory.setProxy(proxy);
+//        ConnectionFactory.setProxy(proxy);
 
         Aria2Download aria2Download = null;
         try {

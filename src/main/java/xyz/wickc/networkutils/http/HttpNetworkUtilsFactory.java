@@ -1,6 +1,5 @@
 package xyz.wickc.networkutils.http;
 
-import com.sun.deploy.net.HttpResponse;
 import xyz.wickc.networkutils.http.impl.SimpleHttpNetworkUtils;
 
 /**

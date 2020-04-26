@@ -39,8 +39,9 @@ public class NetworkRequestData extends NetworkData{
     }
 
     /**
-     * 构造方法
-     * @param url 请求路径
+     * 默认情况下,需要使用 URL 地址加上请求方法来构造请求对象
+     * @param url URL 地址
+     * @param requestMethod 请求方法
      */
     public NetworkRequestData(URL url,RequestMethod requestMethod) {
         super(url,requestMethod);

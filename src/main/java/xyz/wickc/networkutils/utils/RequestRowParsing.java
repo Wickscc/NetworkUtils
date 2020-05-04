@@ -1,92 +1,120 @@
 package xyz.wickc.networkutils.utils;
 
+import xyz.wickc.networkutils.domain.NetworkRequestData;
+import xyz.wickc.networkutils.domain.RequestMethod;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.Reader;
+import java.net.URL;
+import java.util.*;
+
 /**
  * Created on 2020/2/18
- *
+ * <p>
  * 用于将请求头的 Row 格式进行解析,Row 格式是这样的
- *
- *      [Request Method] [RequestPath] [Protocol]/[Protocol version]
- *      [Headers] : [Value]
- *      ...
- *
- *      [Request Body]
+ * <p>
+ * [Request Method] [RequestPath] [Protocol]/[Protocol version]
+ * [Headers] : [Value]
+ * ...
+ * <p>
+ * [Request Body]
  *
  * @author wicks
  * @since 1.8
  */
 public class RequestRowParsing {
-//
-//    /**
-//     * 将原始的 HTTP 请求转换成 RequestData
-//     * @param rowData 原始数据
-//     * @return RequestDataObject
-//     * @throws IOException 读取文件时出错抛出的异常
-//     */
-//    public static RequestData parsingRowRequest(Reader rowData) throws IOException {
-//        RequestData requestData = new RequestData();
-//        LineNumberReader lineNumberReader = new LineNumberReader(new BufferedReader(rowData));
-//        String requestPath = null;
-//        String requestProtocol = null;
-//        String host = null;
-//        String requestMethod = null;
-//
-//        boolean isRequestBody = false;
-//        String requestBody = null;
-//
-//        String lineData = null;
-//        while((lineData = lineNumberReader.readLine()) != null){
-////            判断是否是第一行,如果是则将信息抽取出来!
-//            if(lineNumberReader.getLineNumber() == 1){
-//                String[] strarr = lineData.split(" ");
-//
-//                requestMethod = strarr[0].toUpperCase();
-//                requestData.setRequestMethod(RequestMethod.valueOf(strarr[0].toUpperCase()));
-//                requestPath = strarr[1];
-//
-//                String[] tempArr = strarr[2].split("/");
-//                requestProtocol = tempArr[0];
-//
-//                continue;
-//            }
-//
-////            判断是否到了请求头与请求体之间的空行!
-//            if ("".equals(lineData)){
-//                if ("POST".equals(requestMethod)){
-//                    break;
-//                }
-//                isRequestBody = true;
-//
-//                continue;
-//            }
-//
-////            如果在之前判断为请求头部分结束则开始将请求体部分输入到 String 中!
-//            if (isRequestBody && "POST".equals(requestMethod)){
-//                requestBody = lineData;
-//
-//                continue;
-//            }
-//
-//            String[] hvArr = lineData.split(": ");
-//
-//            String header = hvArr[0];
-//            String value = null;
-//
-//            try {
-//                value = hvArr[1];
-//            }catch (Exception e){
-//                throw new RuntimeException("ArrayError LineData=" + lineData);
-//            }
-//
-//            if ("Host".equals(header)){
-//                host = value;
-//            }
-//
-//            requestData.setHread(header,value);
-//        }
-//
-//        requestData.setUrl(requestProtocol.toLowerCase() + "://" + host +requestPath);
-//        requestData.setRequestBody(requestBody);
-//
-//        return requestData;
-//    }
+
+    /**
+     * 将原始的 HTTP 请求转换成 RequestData
+     * 并不支持多部件请求的操作!
+     *
+     * @param rowData 原始数据
+     * @return RequestDataObject
+     * @throws IOException 读取文件时出错抛出的异常
+     */
+    public static NetworkRequestData parsingRowRequest(Reader rowData) throws IOException {
+        List<String> fileList = readRowFile(rowData);
+
+        if (fileList.isEmpty()) {
+            throw new RuntimeException("指定的请求文件为空!");
+        }
+
+        Map<String, Set<String>> headerMap = new HashMap<>(10);
+        fileList.stream()
+                .skip(1)
+                .forEach(s -> {
+                    String[] kvArrays = s.split(":");
+
+                    if (kvArrays[0].isEmpty()){
+                        return;
+                    }
+
+                    if (kvArrays.length == 1) {
+                        headerMap.put(kvArrays[0], new HashSet<>());
+                    } else if (kvArrays.length == 2) {
+                        Set<String> stringList = headerMap.get(kvArrays[0]);
+                        if (stringList == null) {
+                            stringList = new HashSet<>();
+                        }
+
+                        stringList.add(kvArrays[1].trim());
+                        headerMap.put(kvArrays[0], stringList);
+                    }
+                });
+
+        RequestMethod method = null;
+        String url = null;
+        String protocol = null;
+        URL urlObject = null;
+
+        String[] headerStrArr = fileList.get(0).split(" ");
+
+        if (headerStrArr.length < 2){
+            throw new RuntimeException("HTTP 原始格式文件不合法!");
+        }
+
+        method = RequestMethod.valueOf(headerStrArr[0]);
+        url = headerStrArr[1];
+
+
+        if (!url.startsWith("https://")){
+            String host = headerMap.get("Host").iterator().next();
+
+            if (!url.startsWith("/")){
+                url = "/" + url;
+            }
+
+            urlObject = new URL("http://" + host.trim() + url.trim());
+        }else {
+            urlObject = new URL(url);
+        }
+
+        NetworkRequestData requestData = new NetworkRequestData(urlObject,method);
+        requestData.setHeaderMap(headerMap);
+
+        if (method == RequestMethod.POST){
+            requestData.setRequestBodyData(fileList.get(fileList.size() - 1).getBytes("UTF-8"));
+        }
+
+        return requestData;
+    }
+
+    private static List<String> readRowFile(Reader reader) throws IOException {
+
+        if (reader == null) {
+            throw new RuntimeException("Reader 不能为空!");
+        }
+
+        List<String> fileList = new ArrayList<>();
+        LineNumberReader lineNumberReader = new LineNumberReader(reader);
+
+        String line = null;
+        while ((line = lineNumberReader.readLine()) != null) {
+            fileList.add(line);
+        }
+
+        return fileList;
+    }
 }

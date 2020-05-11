@@ -13,6 +13,11 @@ import java.util.zip.GZIPOutputStream;
  * @since 1.8
  */
 public class DecodeUtils {
+    /**
+     * 使用 GZIP 解码
+     * @param bytes 被解码的字节数据
+     * @return 解码完成的字节数据
+     */
     public static byte[] deCodeGzipCode(byte[] bytes){
         try {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
@@ -29,6 +34,11 @@ public class DecodeUtils {
         return null;
     }
 
+    /**
+     * GZIP 解码
+     * @param inputStream 解码数据
+     * @return 解码完成的字节数据
+     */
     public static byte[] deCodeGzipCode(InputStream inputStream){
         try {
             GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);

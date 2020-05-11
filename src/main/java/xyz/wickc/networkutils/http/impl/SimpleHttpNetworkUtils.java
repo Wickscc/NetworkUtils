@@ -27,8 +27,16 @@ import java.util.Set;
  * @since 1.8
  */
 public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
-    private static final String BROTLI_CONTENT_TYPE = "br";
-    private static final String GZIP_CONTENT_TYPE = "gzip";
+    /**
+     * Brotli 压缩的识别键
+     */
+    protected static final String BROTLI_CONTENT_TYPE = "br";
+
+    /**
+     * Gzip 压缩的识别键
+     */
+    protected static final String GZIP_CONTENT_TYPE = "gzip";
+
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpNetworkUtils.class);
 
     public SimpleHttpNetworkUtils() {
@@ -50,14 +58,17 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
             }
         }
 
+//        解析 NetworkRequestData 包含的数据
         byte[] requestBody = requestData.getRequestBodyData();
         Map<String, Set<String>> headerMap = requestData.getHeaderMap();
         RequestMethod requestMethod = requestData.getRequestMethod();
 
         logger.debug("Request URL : " + url.toString());
+
         if (requestBody != null) {
             logger.debug("Request BodyLength : " + requestBody.length);
         }
+
         logger.debug("Request Header : " + headerMap.toString());
         logger.debug("Request Method : " + requestMethod.name());
 
@@ -108,9 +119,16 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         }
     }
 
-    private byte[] parsingResponse(InputStream connectionInputStream,Map<String,List<String>> respHeaderMap){
+    /**
+     * 解析响应体
+     * @param connectionInputStream 响应体的输入流
+     * @param respHeaderMap 响应头的Map
+     * @return 响应体数据
+     */
+    protected byte[] parsingResponse(InputStream connectionInputStream,Map<String,List<String>> respHeaderMap){
         List<String> strings = respHeaderMap.get("Content-Encoding");
 
+//        判断是否存在有响应体数据的编码，如果没有那么就直接读取流并且转码
         if (strings == null){
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -143,7 +161,13 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         }
     }
 
-    private void outputData(byte[] requestBody,OutputStream connectionOutPutStream) throws IOException{
+    /**
+     * 发送数据给客户端
+     * @param requestBody 请求体
+     * @param connectionOutPutStream 请求的输出流
+     * @throws IOException 输出时发生错误
+     */
+    protected void outputData(byte[] requestBody,OutputStream connectionOutPutStream) throws IOException{
         OutputStream connectionOutputStream = null;
         ByteArrayInputStream requestBodyInputStream = null;
 

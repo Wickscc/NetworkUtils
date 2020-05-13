@@ -12,10 +12,7 @@ import xyz.wickc.networkutils.utils.DecodeUtils;
 import xyz.wickc.networkutils.utils.HttpResponseDataBuilder;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.net.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +47,12 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         }
 
         URL url = requestData.getUrl();
-        if (requestData.getQueryData() != null){
+        String queryData = requestData.getQueryData();
+        if (queryData != null){
+            if (!queryData.startsWith("?")){
+                queryData = "?" + queryData;
+            }
+
             try {
                 url = new URL(requestData.getUrl().toString() + requestData.getQueryData());
             } catch (MalformedURLException e) {
@@ -88,7 +90,9 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
                 }
             }
 
-            outputData(requestBody,connection.getOutputStream());
+//            当 Connection 获取到 outputStream 的时候,自动将请求方式改成 POST
+//            outputData(requestBody,connection.getOutputStream());
+            outputData(requestBody,connection);
         } catch (ProtocolException e) {
             throw new RuntimeException("设置参数时出错",e);
         } catch (IOException e) {
@@ -167,12 +171,12 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
      * @param connectionOutPutStream 请求的输出流
      * @throws IOException 输出时发生错误
      */
-    protected void outputData(byte[] requestBody,OutputStream connectionOutPutStream) throws IOException{
+    protected void outputData(byte[] requestBody, HttpURLConnection connection) throws IOException{
         OutputStream connectionOutputStream = null;
         ByteArrayInputStream requestBodyInputStream = null;
 
         if (requestBody != null && requestBody.length != 0) {
-            connectionOutputStream = connectionOutPutStream;
+            connectionOutputStream = connection.getOutputStream();
             requestBodyInputStream = new ByteArrayInputStream(requestBody);
 
             IOUtils.copy(requestBodyInputStream, connectionOutputStream);

@@ -61,6 +61,18 @@ public class RequestRowParsing {
 
                         stringList.add(kvArrays[1].trim());
                         headerMap.put(kvArrays[0], stringList);
+                    } else{
+//                        2020-05-16 更新,优化在请求原始文件中有多个 ":" 符号的情况!
+                        String key = kvArrays[0];
+                        StringBuilder value = new StringBuilder();
+                        for (int i = 1; i < kvArrays.length; i++) {
+                            value.append(kvArrays[i]);
+                        }
+
+                        Set<String> stringSet = new HashSet<>();
+                        stringSet.add(value.toString());
+
+                        headerMap.put(key, stringSet);
                     }
                 });
 

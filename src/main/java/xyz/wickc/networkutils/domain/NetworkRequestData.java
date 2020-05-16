@@ -31,6 +31,9 @@ public class NetworkRequestData extends NetworkData{
     private String queryData;
 
     public int[] getTrustStatusCode() {
+        if (trustStatusCode == null){
+            return new int[0];
+        }
         return trustStatusCode;
     }
 

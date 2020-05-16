@@ -25,6 +25,6 @@ public class EVTest {
         String urlB = "/UpdateCheck.aspx?isBeta=False";
 
         new URL(urlA);
-        new URL(urlB);
+//        new URL(urlB);
     }
 }

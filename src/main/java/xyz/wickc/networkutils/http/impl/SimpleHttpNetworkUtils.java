@@ -13,6 +13,7 @@ import xyz.wickc.networkutils.utils.HttpResponseDataBuilder;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,21 +43,21 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
 
     @Override
     public NetworkResponseData readPage(NetworkRequestData requestData) {
-        if (requestData == null){
+        if (requestData == null) {
             throw new RuntimeException("requestData 不能为 Null");
         }
 
         URL url = requestData.getUrl();
         String queryData = requestData.getQueryData();
-        if (queryData != null){
-            if (!queryData.startsWith("?")){
+        if (queryData != null) {
+            if (!queryData.startsWith("?")) {
                 queryData = "?" + queryData;
             }
 
             try {
                 url = new URL(requestData.getUrl().toString() + requestData.getQueryData());
             } catch (MalformedURLException e) {
-                throw new RuntimeException("您提交的 QueryData 不符合规范 : " + url.toString(),e);
+                throw new RuntimeException("您提交的 QueryData 不符合规范 : " + url.toString(), e);
             }
         }
 
@@ -86,60 +87,69 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
             for (String headerKey : headerKeySet) {
                 Set<String> valueSet = headerMap.get(headerKey);
                 for (String headerValue : valueSet) {
-                    connection.addRequestProperty(headerKey,headerValue);
+                    connection.addRequestProperty(headerKey, headerValue);
                 }
             }
 
 //            当 Connection 获取到 outputStream 的时候,自动将请求方式改成 POST
 //            outputData(requestBody,connection.getOutputStream());
-            outputData(requestBody,connection);
+            outputData(requestBody, connection);
         } catch (ProtocolException e) {
-            throw new RuntimeException("设置参数时出错",e);
+            throw new RuntimeException("设置参数时出错", e);
         } catch (IOException e) {
-            throw new RuntimeException("输出数据到服务器时出错!",e);
+            throw new RuntimeException("输出数据到服务器时出错!", e);
         }
 
 //        连接 URL
         try {
             connection.connect();
         } catch (IOException e) {
-            throw new RuntimeException("连接URL的时候出现错误!",e);
+            throw new RuntimeException("连接URL的时候出现错误!", e);
         }
 
 //        返回数据处理并且返回
         try {
             int responseCode = connection.getResponseCode();
-            InputStream inputStream = connection.getInputStream();
+
+            InputStream inputStream;
+            boolean b = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> responseCode == i);
+            if (responseCode != 200 && b) {
+                inputStream = connection.getErrorStream();
+            }else {
+                inputStream = connection.getInputStream();
+            }
+
             Map<String, List<String>> respHeaderMap = connection.getHeaderFields();
-            byte[] bytes = parsingResponse(inputStream,respHeaderMap);
+            byte[] bytes = parsingResponse(inputStream, respHeaderMap);
 
             logger.debug("Response BodyLength : " + bytes.length);
             logger.debug("Response Header : " + respHeaderMap.toString());
             logger.debug("Response Code : " + responseCode);
 
-            return HttpResponseDataBuilder.builderNetworkResponseData(bytes,respHeaderMap,responseCode);
+            return HttpResponseDataBuilder.builderNetworkResponseData(bytes, respHeaderMap, responseCode);
         } catch (IOException e) {
-            throw new RuntimeException("处理响应信息时出错!",e);
+            throw new RuntimeException("处理响应信息时出错!", e);
         }
     }
 
     /**
      * 解析响应体
+     *
      * @param connectionInputStream 响应体的输入流
-     * @param respHeaderMap 响应头的Map
+     * @param respHeaderMap         响应头的Map
      * @return 响应体数据
      */
-    protected byte[] parsingResponse(InputStream connectionInputStream,Map<String,List<String>> respHeaderMap){
+    protected byte[] parsingResponse(InputStream connectionInputStream, Map<String, List<String>> respHeaderMap) {
         List<String> strings = respHeaderMap.get("Content-Encoding");
 
 //        判断是否存在有响应体数据的编码，如果没有那么就直接读取流并且转码
-        if (strings == null){
+        if (strings == null) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
             try {
-                IOUtils.copy(connectionInputStream,outputStream);
+                IOUtils.copy(connectionInputStream, outputStream);
             } catch (IOException e) {
-                throw new RuntimeException("數據傳輸時出錯!",e);
+                throw new RuntimeException("數據傳輸時出錯!", e);
             }
 
             return outputStream.toByteArray();
@@ -149,29 +159,30 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         try {
-            IOUtils.copy(connectionInputStream,outputStream);
+            IOUtils.copy(connectionInputStream, outputStream);
         } catch (IOException e) {
-            throw new RuntimeException("數據傳輸時出錯!",e);
+            throw new RuntimeException("數據傳輸時出錯!", e);
         }
 
         byte[] data = outputStream.toByteArray();
 
-        if (BROTLI_CONTENT_TYPE.equals(encodeMethod)){
+        if (BROTLI_CONTENT_TYPE.equals(encodeMethod)) {
             return DecodeUtils.deCodeBrotliCode(data);
-        }else if (GZIP_CONTENT_TYPE.equals(encodeMethod)){
+        } else if (GZIP_CONTENT_TYPE.equals(encodeMethod)) {
             return DecodeUtils.deCodeGzipCode(data);
-        }else{
+        } else {
             return data;
         }
     }
 
     /**
      * 发送数据给客户端
+     *
      * @param requestBody 请求体
-     * @param connectionOutPutStream 请求的输出流
+     * @param connection  HttpURLConnection 对象,用于获取 outputStream
      * @throws IOException 输出时发生错误
      */
-    protected void outputData(byte[] requestBody, HttpURLConnection connection) throws IOException{
+    protected void outputData(byte[] requestBody, HttpURLConnection connection) throws IOException {
         OutputStream connectionOutputStream = null;
         ByteArrayInputStream requestBodyInputStream = null;
 

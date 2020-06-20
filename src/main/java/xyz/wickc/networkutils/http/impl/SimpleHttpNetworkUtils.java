@@ -132,6 +132,94 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         }
     }
 
+    public NetworkResponseData readPage(HttpURLConnection connection,NetworkRequestData requestData){
+        if (requestData == null) {
+            throw new RuntimeException("requestData 不能为 Null");
+        }
+
+        URL url = requestData.getUrl();
+        String queryData = requestData.getQueryData();
+        if (queryData != null) {
+            if (!queryData.startsWith("?")) {
+                queryData = "?" + queryData;
+            }
+
+            try {
+                url = new URL(requestData.getUrl().toString() + requestData.getQueryData());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("您提交的 QueryData 不符合规范 : " + url.toString(), e);
+            }
+        }
+
+//        解析 NetworkRequestData 包含的数据
+        byte[] requestBody = requestData.getRequestBodyData();
+        Map<String, Set<String>> headerMap = requestData.getHeaderMap();
+        RequestMethod requestMethod = requestData.getRequestMethod();
+
+        logger.debug("Request URL : " + url.toString());
+
+        if (requestBody != null) {
+            logger.debug("Request BodyLength : " + requestBody.length);
+        }
+
+        logger.debug("Request Header : " + headerMap.toString());
+        logger.debug("Request Method : " + requestMethod.name());
+
+//        初始化设置,设置请求头 请求方法 和发送数据等操作
+        try {
+            connection.setRequestMethod(requestMethod.name());
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            Set<String> headerKeySet = headerMap.keySet();
+            for (String headerKey : headerKeySet) {
+                Set<String> valueSet = headerMap.get(headerKey);
+                for (String headerValue : valueSet) {
+                    connection.addRequestProperty(headerKey, headerValue);
+                }
+            }
+
+//            当 Connection 获取到 outputStream 的时候,自动将请求方式改成 POST
+//            outputData(requestBody,connection.getOutputStream());
+            outputData(requestBody, connection);
+        } catch (ProtocolException e) {
+            throw new RuntimeException("设置参数时出错", e);
+        } catch (IOException e) {
+            throw new RuntimeException("输出数据到服务器时出错!", e);
+        }
+
+//        连接 URL
+        try {
+            connection.connect();
+        } catch (IOException e) {
+            throw new RuntimeException("连接URL的时候出现错误!", e);
+        }
+
+//        返回数据处理并且返回
+        try {
+            int responseCode = connection.getResponseCode();
+
+            InputStream inputStream;
+            boolean b = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> responseCode == i);
+            if (responseCode != 200 && b) {
+                inputStream = connection.getErrorStream();
+            }else {
+                inputStream = connection.getInputStream();
+            }
+
+            Map<String, List<String>> respHeaderMap = connection.getHeaderFields();
+            byte[] bytes = parsingResponse(inputStream, respHeaderMap);
+
+            logger.debug("Response BodyLength : " + bytes.length);
+            logger.debug("Response Header : " + respHeaderMap.toString());
+            logger.debug("Response Code : " + responseCode);
+
+            return HttpResponseDataBuilder.builderNetworkResponseData(bytes, respHeaderMap, responseCode);
+        } catch (IOException e) {
+            throw new RuntimeException("处理响应信息时出错!", e);
+        }
+    }
+
     /**
      * 解析响应体
      *

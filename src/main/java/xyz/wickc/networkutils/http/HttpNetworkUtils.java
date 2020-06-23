@@ -2,6 +2,7 @@ package xyz.wickc.networkutils.http;
 
 import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkResponseData;
+import xyz.wickc.networkutils.exception.NetworkException;
 
 /**
  * Created on 2020/4/24

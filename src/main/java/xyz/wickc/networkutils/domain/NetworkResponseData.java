@@ -29,7 +29,8 @@ public class NetworkResponseData extends NetworkData{
      */
     public String getCookieStr(){
         Map<String, Set<String>> headerMap = super.getHeaderMap();
-        Set<String> setCookieSet = headerMap.get(SET_COOKIE_HEADER_KEY.toLowerCase());
+        Set<String> setCookieSet = headerMap.get(SET_COOKIE_HEADER_KEY);
+
         return CookieStringUtils.getCookieString(new ArrayList<>(setCookieSet), "");
     }
 

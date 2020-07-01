@@ -6,6 +6,7 @@ import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkResponseData;
 import xyz.wickc.networkutils.exception.ConfigException;
 import xyz.wickc.networkutils.exception.NetworkException;
+import xyz.wickc.networkutils.http.CustomizeHttpNetworkUtils;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.utils.ConnectionFactory;
 
@@ -20,7 +21,7 @@ import java.net.URLConnection;
  * @author wicks
  * @since 1.8
  */
-public abstract class AbstractHttpNetworkUtils implements HttpNetworkUtils {
+public abstract class AbstractHttpNetworkUtils implements HttpNetworkUtils, CustomizeHttpNetworkUtils {
     private static final int MAX_TRY = 3;
     private static Logger logger = LoggerFactory.getLogger(AbstractHttpNetworkUtils.class);
 
@@ -78,6 +79,7 @@ public abstract class AbstractHttpNetworkUtils implements HttpNetworkUtils {
      * @throws NetworkException 网络传输时抛出的异常
      * @throws ConfigException NetworkRequestData 配置错误时候抛出的异常
      */
+    @Override
     public abstract NetworkResponseData seanRequest(HttpURLConnection connection,NetworkRequestData requestData)
             throws NetworkException, ConfigException;
 }

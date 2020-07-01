@@ -25,22 +25,22 @@ public class Aria2DownloadTest {
     public void downloadTestFile() {
 //        ConnectionFactory.setProxy(proxy);
 
-        Aria2Download aria2Download = null;
-        try {
-            aria2Download = new HttpUrlAria2Download(
-                    new URL("http://192.168.123.159:6800/jsonrpc"),
-                    new URL("http://192.168.123.152:8888"),
-                    "ER3tNT8BIfT8q",
-                    RequestMethod.POST
-            );
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-
-        aria2Download.downloadUrl(
-                "NetworkUtilsDownloadTest_" + System.currentTimeMillis() + ".html",
-                "/nasDisk/aria/test",
-                "https://wickc.xyz:8443/BTTVWeb"
-        );
+//        Aria2Download aria2Download = null;
+//        try {
+//            aria2Download = new HttpUrlAria2Download(
+//                    new URL("http://192.168.123.159:6800/jsonrpc"),
+//                    new URL("http://192.168.123.152:8888"),
+//                    "ER3tNT8BIfT8q",
+//                    RequestMethod.POST
+//            );
+//        } catch (MalformedURLException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        aria2Download.downloadUrl(
+//                "NetworkUtilsDownloadTest_" + System.currentTimeMillis() + ".html",
+//                "/nasDisk/aria/test",
+//                "https://wickc.xyz:8443/BTTVWeb"
+//        );
     }
 }

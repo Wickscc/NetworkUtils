@@ -47,7 +47,7 @@ public class HttpRequestTest {
 
     @Test
     public void cacheHttpRequestTest() throws MalformedURLException {
-        HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getCacheHttpNetworkUtils();
+        HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getCacheHttpNetworkUtils(HttpNetworkUtilsFactory.getHttpNetworkUtils());
 
         for (int i = 0; i < 5; i++) {
             NetworkRequestData requestData = new NetworkRequestData(

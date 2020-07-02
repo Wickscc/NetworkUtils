@@ -2,6 +2,7 @@ package xyz.wickc.networkutils.http.impl;
 
 import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkResponseData;
+import xyz.wickc.networkutils.http.CacheHttpNetworkUtils;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.http.cache.CacheHttpRequest;
 
@@ -11,11 +12,11 @@ import xyz.wickc.networkutils.http.cache.CacheHttpRequest;
  * @author wicks
  * @since 1.8
  */
-public class CacheHttpNetworkUtils implements HttpNetworkUtils {
+public class CacheHttpNetworkUtilsImpl implements CacheHttpNetworkUtils {
     private final HttpNetworkUtils httpNetworkUtils;
     private final CacheHttpRequest cacheHttpRequest;
 
-    public CacheHttpNetworkUtils(HttpNetworkUtils httpNetworkUtils, CacheHttpRequest cacheHttpRequest) {
+    public CacheHttpNetworkUtilsImpl(HttpNetworkUtils httpNetworkUtils, CacheHttpRequest cacheHttpRequest) {
         this.httpNetworkUtils = httpNetworkUtils;
         this.cacheHttpRequest = cacheHttpRequest;
     }

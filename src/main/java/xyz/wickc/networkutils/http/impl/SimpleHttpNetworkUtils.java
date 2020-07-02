@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkResponseData;
 import xyz.wickc.networkutils.domain.RequestMethod;
-import xyz.wickc.networkutils.exception.ConfigException;
-import xyz.wickc.networkutils.exception.NetworkException;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.utils.ConnectionFactory;
 import xyz.wickc.networkutils.utils.DecodeUtils;
@@ -26,7 +24,7 @@ import java.util.Set;
  * @author wicks
  * @since 1.8
  */
-public class SimpleHttpNetworkUtils extends AbstractHttpNetworkUtils {
+public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
     /**
      * Brotli 压缩的识别键
      */
@@ -39,14 +37,27 @@ public class SimpleHttpNetworkUtils extends AbstractHttpNetworkUtils {
 
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpNetworkUtils.class);
 
-    public SimpleHttpNetworkUtils() {
-
-    }
+    public SimpleHttpNetworkUtils() {}
 
     @Override
-    public NetworkResponseData seanRequest(HttpURLConnection connection, NetworkRequestData requestData)
-            throws NetworkException, ConfigException {
+    public NetworkResponseData readPage(NetworkRequestData requestData) {
+        if (requestData == null) {
+            throw new RuntimeException("requestData 不能为 Null");
+        }
+
         URL url = requestData.getUrl();
+        String queryData = requestData.getQueryData();
+        if (queryData != null) {
+            if (!queryData.startsWith("?")) {
+                queryData = "?" + queryData;
+            }
+
+            try {
+                url = new URL(requestData.getUrl().toString() + requestData.getQueryData());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("您提交的 QueryData 不符合规范 : " + url.toString(), e);
+            }
+        }
 
 //        解析 NetworkRequestData 包含的数据
         byte[] requestBody = requestData.getRequestBodyData();
@@ -61,6 +72,8 @@ public class SimpleHttpNetworkUtils extends AbstractHttpNetworkUtils {
 
         logger.debug("Request Header : " + headerMap.toString());
         logger.debug("Request Method : " + requestMethod.name());
+
+        HttpURLConnection connection = (HttpURLConnection) ConnectionFactory.getUrlConnection(url);
 
 //        初始化设置,设置请求头 请求方法 和发送数据等操作
         try {
@@ -80,16 +93,16 @@ public class SimpleHttpNetworkUtils extends AbstractHttpNetworkUtils {
 //            outputData(requestBody,connection.getOutputStream());
             outputData(requestBody, connection);
         } catch (ProtocolException e) {
-            throw new ConfigException("设置参数时出错", e);
+            throw new RuntimeException("设置参数时出错", e);
         } catch (IOException e) {
-            throw new NetworkException("输出数据到服务器时出错!", e);
+            throw new RuntimeException("输出数据到服务器时出错!", e);
         }
 
 //        连接 URL
         try {
             connection.connect();
         } catch (IOException e) {
-            throw new NetworkException("连接URL的时候出现错误!", e);
+            throw new RuntimeException("连接URL的时候出现错误!", e);
         }
 
 //        返回数据处理并且返回
@@ -113,7 +126,7 @@ public class SimpleHttpNetworkUtils extends AbstractHttpNetworkUtils {
 
             return HttpResponseDataBuilder.builderNetworkResponseData(bytes, respHeaderMap, responseCode);
         } catch (IOException e) {
-            throw new NetworkException("处理响应信息时出错!", e);
+            throw new RuntimeException("处理响应信息时出错!", e);
         }
     }
 

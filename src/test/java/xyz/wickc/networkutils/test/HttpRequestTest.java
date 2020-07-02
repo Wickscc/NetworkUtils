@@ -1,63 +1,125 @@
 package xyz.wickc.networkutils.test;
 
-import org.junit.Before;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkResponseData;
 import xyz.wickc.networkutils.domain.RequestMethod;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.http.HttpNetworkUtilsFactory;
-import xyz.wickc.networkutils.http.cache.CacheHttpRequest;
-import xyz.wickc.networkutils.http.cache.impl.HashMapCacheHttpRequestImpl;
-import xyz.wickc.networkutils.http.impl.CacheHttpNetworkUtils;
 
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created on 2020/6/23
+ * Created on 2020/7/1
  *
  * @author wicks
  * @since 1.8
  */
 public class HttpRequestTest {
-    private static final String UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2740.13 Safari/537.36";
-    private HttpNetworkUtils httpNetworkUtils;
+    private static final String TEST_URL = "https://baidu.com";
+    private static final String UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36";
 
-    @Before
-    public void bef(){
-        httpNetworkUtils = HttpNetworkUtilsFactory.getHttpNetworkUtils();
-    }
+    private static Logger logger = LoggerFactory.getLogger(HttpRequestTest.class);
 
     @Test
-    public void testBaseGet() throws Exception{
+    public void httpRequestTest() throws MalformedURLException {
+        HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getHttpNetworkUtils();
+
         NetworkRequestData requestData = new NetworkRequestData(
-                new URL("https://baidu.com"),
-                RequestMethod.GET
+                new URL(TEST_URL),RequestMethod.GET
         );
 
         requestData.setUserAgent(UA);
 
         NetworkResponseData responseData = httpNetworkUtils.readPage(requestData);
-        System.out.println(new String(responseData.getRequestBodyData()));
+
+        logger.info("Cookie: " + responseData.getCookieStr());
+        logger.info("CookieList: " + responseData.getCookieList());
+        logger.info("Header: " + responseData.getHeaderMap());
+        logger.info("RespBodyLength: " + responseData.getRequestBodyData().length);
     }
 
     @Test
-    public void cacheGet() throws Exception{
-        CacheHttpNetworkUtils cacheHttpNetworkUtils = new CacheHttpNetworkUtils(
-                httpNetworkUtils,
-                new HashMapCacheHttpRequestImpl()
-        );
+    public void cacheHttpRequestTest() throws MalformedURLException {
+        HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getCacheHttpNetworkUtils();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             NetworkRequestData requestData = new NetworkRequestData(
-                    new URL("https://www.bing.com/?mkt=zh-CN"),
-                    RequestMethod.GET
+                    new URL(TEST_URL),RequestMethod.GET
             );
 
             requestData.setUserAgent(UA);
 
-            NetworkResponseData responseData = cacheHttpNetworkUtils.readPage(requestData);
-            System.out.println(new String(responseData.getRequestBodyData()));
+            long startTime = System.currentTimeMillis();
+            NetworkResponseData responseData = httpNetworkUtils.readPage(requestData);
+            long endTime = System.currentTimeMillis();
+
+
+            logger.info("Length: " + i);
+            logger.info("Time: " + (endTime - startTime));
+            logger.info("Cookie: " + responseData.getCookieStr());
+            logger.info("CookieList: " + responseData.getCookieList());
+            logger.info("Header: " + responseData.getHeaderMap());
+            logger.info("RespBodyLength: " + responseData.getRequestBodyData().length);
         }
+    }
+
+    @Test
+    public void notCacheHttpRequestTest() throws MalformedURLException {
+        HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getHttpNetworkUtils();
+
+        for (int i = 0; i < 5; i++) {
+            NetworkRequestData requestData = new NetworkRequestData(
+                    new URL(TEST_URL),RequestMethod.GET
+            );
+
+            requestData.setUserAgent(UA);
+
+            long startTime = System.currentTimeMillis();
+            NetworkResponseData responseData = httpNetworkUtils.readPage(requestData);
+            long endTime = System.currentTimeMillis();
+
+
+            logger.info("Length: " + i);
+            logger.info("Time: " + (endTime - startTime));
+            logger.info("Cookie: " + responseData.getCookieStr());
+            logger.info("CookieList: " + responseData.getCookieList());
+            logger.info("Header: " + responseData.getHeaderMap());
+            logger.info("RespBodyLength: " + responseData.getRequestBodyData().length);
+        }
+    }
+
+    @Test
+    public void postDataToServer() throws MalformedURLException {
+        String url = "https://blog.wickc.xyz:7443/blog_api/user/login";
+
+        HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getHttpNetworkUtils();
+
+        NetworkRequestData requestData = new NetworkRequestData(
+                new URL(url),RequestMethod.POST
+        );
+
+        requestData.setUserAgent(UA);
+        requestData.setTrustStatusCode(400);
+        requestData.setRequestBodyData("password=123456789&username=123456789".getBytes());
+
+        NetworkResponseData responseData = httpNetworkUtils.readPage(requestData);
+
+        logger.info("Cookie: " + responseData.getCookieStr());
+        logger.info("CookieList: " + responseData.getCookieList());
+        logger.info("Header: " + responseData.getHeaderMap());
+        logger.info("RespBodyLength: " + responseData.getRequestBodyData().length);
+        logger.info("RespBody: " + new String(responseData.getRequestBodyData()));
+    }
+
+    @Test
+    public void customizeTest(){
+
     }
 }

@@ -44,7 +44,8 @@ public class SimpleHttpNetworkUtils extends AbstractHttpNetworkUtils {
     }
 
     @Override
-    public NetworkResponseData seanRequest(HttpURLConnection connection, NetworkRequestData requestData) throws NetworkException, ConfigException {
+    public NetworkResponseData seanRequest(HttpURLConnection connection, NetworkRequestData requestData)
+            throws NetworkException, ConfigException {
         URL url = requestData.getUrl();
 
 //        解析 NetworkRequestData 包含的数据

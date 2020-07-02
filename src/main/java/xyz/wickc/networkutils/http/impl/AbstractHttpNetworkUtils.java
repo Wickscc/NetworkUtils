@@ -60,17 +60,6 @@ public abstract class AbstractHttpNetworkUtils implements HttpNetworkUtils, Cust
         return responseData;
     }
 
-
-//    /**
-//     * 发送请求
-//     * @param requestData 请求数据
-//     * @return 响应数据
-//     * @throws NetworkException 网络传输时抛出的异常
-//     * @throws ConfigException NetworkRequestData 配置错误时候抛出的异常
-//     */
-//    public abstract NetworkResponseData seanRequest(NetworkRequestData requestData)
-//            throws NetworkException, ConfigException;
-
     /**
      * 发送请求
      * @param requestData 请求数据

@@ -29,7 +29,23 @@ public class NetworkResponseData extends NetworkData{
      */
     public String getCookieStr(){
         Map<String, Set<String>> headerMap = super.getHeaderMap();
-        Set<String> setCookieSet = headerMap.get(SET_COOKIE_HEADER_KEY);
+        Set<String> setCookieSet = null;
+
+        int len = 0;
+        do {
+            switch (len){
+                case 0:
+                    setCookieSet = headerMap.get(SET_COOKIE_HEADER_KEY.toLowerCase());
+                    break;
+                case 1:
+                    setCookieSet = headerMap.get(SET_COOKIE_HEADER_KEY);
+                    break;
+                default:
+                    return "";
+            }
+
+            len += 1;
+        }while (setCookieSet == null);
 
         return CookieStringUtils.getCookieString(new ArrayList<>(setCookieSet), "");
     }
@@ -40,7 +56,24 @@ public class NetworkResponseData extends NetworkData{
      */
     public List<String> getCookieList(){
         Map<String, Set<String>> headerMap = super.getHeaderMap();
-        Set<String> setCookieSet = headerMap.get(SET_COOKIE_HEADER_KEY.toLowerCase());
+        Set<String> setCookieSet = null;
+
+        int len = 0;
+        do {
+            switch (len){
+                case 0:
+                    setCookieSet = headerMap.get(SET_COOKIE_HEADER_KEY.toLowerCase());
+                    break;
+                case 1:
+                    setCookieSet = headerMap.get(SET_COOKIE_HEADER_KEY);
+                    break;
+                default:
+                    return new ArrayList<>();
+            }
+
+            len += 1;
+        }while (setCookieSet == null);
+
         return new ArrayList<>(setCookieSet);
     }
 

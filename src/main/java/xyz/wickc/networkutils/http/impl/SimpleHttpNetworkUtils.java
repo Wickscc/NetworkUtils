@@ -37,10 +37,52 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
 
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpNetworkUtils.class);
 
-    public SimpleHttpNetworkUtils() {}
+    public SimpleHttpNetworkUtils() {
+    }
 
     @Override
     public NetworkResponseData readPage(NetworkRequestData requestData) {
+        HttpURLConnection connection = parsingRequestData(requestData);
+
+//        连接 URL
+        try {
+            connection.connect();
+        } catch (IOException e) {
+            throw new RuntimeException("连接URL的时候出现错误!", e);
+        }
+
+//        返回数据处理并且返回
+        try {
+            int responseCode = connection.getResponseCode();
+
+            InputStream inputStream;
+            boolean b = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> responseCode == i);
+            if (responseCode != 200 && b) {
+                inputStream = connection.getErrorStream();
+            } else {
+                inputStream = connection.getInputStream();
+            }
+
+            Map<String, List<String>> respHeaderMap = connection.getHeaderFields();
+            byte[] bytes = parsingResponse(inputStream, respHeaderMap);
+
+            logger.debug("Response BodyLength : " + bytes.length);
+            logger.debug("Response Header : " + respHeaderMap.toString());
+            logger.debug("Response Code : " + responseCode);
+
+            return HttpResponseDataBuilder.builderNetworkResponseData(bytes, respHeaderMap, responseCode);
+        } catch (IOException e) {
+            throw new RuntimeException("处理响应信息时出错!", e);
+        }
+    }
+
+    /**
+     * 解析 NetworkRequestData 成 HttpUrlConnection
+     *
+     * @param requestData NetworkRequestData
+     * @return HttpUrlConnection
+     */
+    protected HttpURLConnection parsingRequestData(NetworkRequestData requestData) {
         if (requestData == null) {
             throw new RuntimeException("requestData 不能为 Null");
         }
@@ -98,36 +140,7 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
             throw new RuntimeException("输出数据到服务器时出错!", e);
         }
 
-//        连接 URL
-        try {
-            connection.connect();
-        } catch (IOException e) {
-            throw new RuntimeException("连接URL的时候出现错误!", e);
-        }
-
-//        返回数据处理并且返回
-        try {
-            int responseCode = connection.getResponseCode();
-
-            InputStream inputStream;
-            boolean b = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> responseCode == i);
-            if (responseCode != 200 && b) {
-                inputStream = connection.getErrorStream();
-            }else {
-                inputStream = connection.getInputStream();
-            }
-
-            Map<String, List<String>> respHeaderMap = connection.getHeaderFields();
-            byte[] bytes = parsingResponse(inputStream, respHeaderMap);
-
-            logger.debug("Response BodyLength : " + bytes.length);
-            logger.debug("Response Header : " + respHeaderMap.toString());
-            logger.debug("Response Code : " + responseCode);
-
-            return HttpResponseDataBuilder.builderNetworkResponseData(bytes, respHeaderMap, responseCode);
-        } catch (IOException e) {
-            throw new RuntimeException("处理响应信息时出错!", e);
-        }
+        return connection;
     }
 
     /**

@@ -37,8 +37,7 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
 
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpNetworkUtils.class);
 
-    public SimpleHttpNetworkUtils() {
-    }
+    public SimpleHttpNetworkUtils() { }
 
     @Override
     public NetworkResponseData readPage(NetworkRequestData requestData) {
@@ -56,7 +55,12 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
             int responseCode = connection.getResponseCode();
 
             InputStream inputStream;
-            boolean b = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> responseCode == i);
+            boolean b = false;
+
+            if (requestData != null){
+                b = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> responseCode == i);
+            }
+
             if (responseCode != 200 && b) {
                 inputStream = connection.getErrorStream();
             } else {

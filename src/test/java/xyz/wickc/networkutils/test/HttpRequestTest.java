@@ -1,6 +1,5 @@
 package xyz.wickc.networkutils.test;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +8,12 @@ import xyz.wickc.networkutils.domain.NetworkResponseData;
 import xyz.wickc.networkutils.domain.RequestMethod;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.http.HttpNetworkUtilsFactory;
+import xyz.wickc.networkutils.http.impl.CustomizeHttpNetworkUtils;
 
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -119,7 +121,13 @@ public class HttpRequestTest {
     }
 
     @Test
-    public void customizeTest(){
+    public void customizeTest() throws Exception{
+        URL url = new URL(TEST_URL);
+        URLConnection urlConnection = url.openConnection();
 
+        CustomizeHttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getCustomizeHttpNetworkUtils((HttpURLConnection) urlConnection);
+        NetworkResponseData responseData = httpNetworkUtils.readPage(null);
+
+        System.out.println(new String(responseData.getRequestBodyData()));
     }
 }

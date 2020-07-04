@@ -94,6 +94,12 @@ public class FormUploadNetworkRequestData extends NetworkRequestData {
         this.delimiter = delimiter;
     }
 
+    /**
+     * 这里的 boundary 不需要添加 --- !
+     * 不然会不识别!
+     *
+     * @return
+     */
     public String getContentType(){
         return "multipart/form-data; boundary=" + getDelimiter();
     }

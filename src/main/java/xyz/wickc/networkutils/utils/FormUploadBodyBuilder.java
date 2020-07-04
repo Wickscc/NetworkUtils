@@ -17,6 +17,13 @@ import java.util.Set;
 public class FormUploadBodyBuilder {
     private static final String NEXT_LINE = "\r\n";
 
+    /**
+     * 分隔符前后都要一样,不然会报错!
+     */
+    private static final String PREFIX = "--";
+    private static final String CHARSET = "UTF-8";
+    private static final String KEY_REGEX = "&";
+
     public static byte[] builderRequestBody(FormUploadNetworkRequestData requestData) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Map<String, String> textFrom = requestData.getTextFrom();
@@ -27,14 +34,14 @@ public class FormUploadBodyBuilder {
 
         try {
             for (String key : uploaderFormKeySet) {
-                String[] keyArrays = key.split("&");
+                String[] keyArrays = key.split(KEY_REGEX);
                 String fileName = keyArrays[2];
                 String contentType = keyArrays[1];
                 String name = keyArrays[0];
 
-                outputStream.write(("--" + requestData.getDelimiter() + NEXT_LINE).getBytes("UTF-8"));
+                outputStream.write((PREFIX + requestData.getDelimiter() + NEXT_LINE).getBytes(CHARSET));
                 outputStream.write(("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"" + NEXT_LINE).getBytes("UTF-8"));
-                outputStream.write(("Content-Type: " + contentType + NEXT_LINE + NEXT_LINE).getBytes("UTF-8"));
+                outputStream.write(("Content-Type: " + contentType + NEXT_LINE + NEXT_LINE).getBytes(CHARSET));
                 outputStream.write(uploaderForm.get(key));
                 outputStream.write((NEXT_LINE + NEXT_LINE).getBytes());
             }
@@ -44,16 +51,16 @@ public class FormUploadBodyBuilder {
 
         try {
             for (String key : textFromKeySet) {
-                outputStream.write(("--" + requestData.getDelimiter() + NEXT_LINE).getBytes("UTF-8"));
-                outputStream.write(("Content-Disposition: form-data; name=\"" + key + "\"" + NEXT_LINE + NEXT_LINE).getBytes("UTF-8"));
-                outputStream.write((textFrom.get(key) + NEXT_LINE).getBytes("UTF-8"));
+                outputStream.write((PREFIX + requestData.getDelimiter() + NEXT_LINE).getBytes(CHARSET));
+                outputStream.write(("Content-Disposition: form-data; name=\"" + key + "\"" + NEXT_LINE + NEXT_LINE).getBytes(CHARSET));
+                outputStream.write((textFrom.get(key) + NEXT_LINE).getBytes(CHARSET));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
-            outputStream.write(("--" + requestData.getDelimiter() + "--" + NEXT_LINE).getBytes());
+            outputStream.write((PREFIX + requestData.getDelimiter() + PREFIX + NEXT_LINE).getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

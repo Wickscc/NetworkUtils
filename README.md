@@ -9,7 +9,7 @@
    * 发生错误自动重试
    * 网络代理
    
-示例:
+简单收发请求示例:
 ```java
 public class HttpRequestTest{
     @Test
@@ -48,5 +48,42 @@ public class HttpRequestTest{
         logger.info("Header: " + responseData.getHeaderMap());
         logger.info("RespBodyLength: " + responseData.getRequestBodyData().length);
     }
+}
+```
+
+多部件上传示例:
+```java
+public class TestUploadFile{
+        @Test
+        public void formUploader() throws MalformedURLException {
+            // 读取文件 获取 Byte 数据
+            byte[] data = new byte[1024];
+    
+            FormUploadNetworkRequestData requestData = new FormUploadNetworkRequestData(
+                    new URL("http://127.0.0.1:8080/Images?key=" + "07e8ea7de8734ba089d4ee152f806761")
+            );
+    
+            // 设置文字表单数据
+            requestData.addTextFrom("fileName","WicksImages.png");
+            requestData.addTextFrom("username","WicksChen");
+
+            // 设置文件上传数据
+            requestData.addUploaderForm("images/jpeg","WicksImages.jpg","file",outputStream.toByteArray());
+
+            // 设置信任请求码
+            requestData.setTrustStatusCode(404,400);
+    
+            // 设置请求头            
+            requestData.addHeader("token","405Jkg/npueknD6r5WKA7OlMNCYdJIT4UnXUYaa8AGfUOzzDa8Vxx43zWOwJGE3ccBLwjNh+16F0HYQSYxoW8C1cBTUwoPXkoxCP7hCh2rE=");
+       
+            HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getHttpNetworkUtils();
+            NetworkResponseData responseData = httpNetworkUtils.readPage(requestData);
+    
+            logger.info("Cookie: " + responseData.getCookieStr());
+            logger.info("CookieList: " + responseData.getCookieList());
+            logger.info("Header: " + responseData.getHeaderMap());
+            logger.info("RespBodyLength: " + responseData.getRequestBodyData().length);
+            logger.info("RespBody: " + new String(responseData.getRequestBodyData()));
+        }
 }
 ```

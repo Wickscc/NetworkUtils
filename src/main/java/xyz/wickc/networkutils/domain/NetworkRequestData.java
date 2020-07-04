@@ -127,13 +127,13 @@ public class NetworkRequestData extends NetworkData{
 
     @Override
     public URL getUrl() {
-        if (this.getQueryData() != null && !this.getQueryData().isEmpty()){
-            try {
-                return new URL(super.getUrl().toString() + this.getQueryData());
-            } catch (MalformedURLException e) {
-                throw new RuntimeException("转换成 URL 时候出现错误! \n queryData=" + this.getQueryData() + "\n URL:" + super.getUrl().toString());
-            }
-        }
+//        if (this.getQueryData() != null && !this.getQueryData().isEmpty()){
+//            try {
+//                return new URL(super.getUrl().toString() + this.getQueryData());
+//            } catch (MalformedURLException e) {
+//                throw new RuntimeException("转换成 URL 时候出现错误! \n queryData=" + this.getQueryData() + "\n URL:" + super.getUrl().toString());
+//            }
+//        }
 
         return super.getUrl();
     }

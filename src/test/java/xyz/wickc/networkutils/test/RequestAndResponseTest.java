@@ -1,19 +1,20 @@
 package xyz.wickc.networkutils.test;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.wickc.networkutils.domain.FormUploadNetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.RequestMethod;
 import xyz.wickc.networkutils.utils.RequestRowParsing;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created on 2020/7/2
@@ -66,5 +67,25 @@ public class RequestAndResponseTest {
         logger.info("RequestHeader: " + requestData.getHeaderMap());
         logger.info("RequestUrl: " + requestData.getUrl().toString());
         logger.info("RequestBodyLength: " + (requestData.getRequestBodyData() != null ? new String(requestData.getRequestBodyData()) : 0));
+    }
+
+    @Test
+    public void formUploadRequestTest() throws Exception{
+        InputStream inputStream = new FileInputStream("src/test/resources/ALSTON - LOGO W.png");
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        IOUtils.copy(inputStream,outputStream);
+
+        FormUploadNetworkRequestData requestData = new FormUploadNetworkRequestData(
+                new URL("https://wickc.xyz:8443/Images/images?key=" + UUID.randomUUID().toString().replace("-",""))
+        );
+
+        requestData.addTextFrom("fileName","WicksImages.png");
+        requestData.addTextFrom("username","WicksChen");
+        requestData.setRequestBodyData("k1=v1&k2=v2".getBytes());
+        requestData.addUploaderForm("images/jpeg","WicksImages.jpg","file",outputStream.toByteArray());
+
+        byte[] requestBodyData = requestData.getRequestBodyData();
+        System.out.println(new String(requestBodyData));
     }
 }

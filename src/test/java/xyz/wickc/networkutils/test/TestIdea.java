@@ -56,7 +56,7 @@ public class TestIdea {
         System.out.println(new String(imagesByte));
     }
 
-    @Test
+//    @Test
     public void testIDEA(){
         String target = "http://127.0.0.1:8080/Images?key=" + "07e8ea7de8734ba089d4ee152f806761"; // 要提交的目标地址
         String BOUNDARY = UUID.randomUUID().toString().replace("-","");

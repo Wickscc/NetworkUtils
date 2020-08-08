@@ -1,4 +1,4 @@
-package xyz.wickc.networkutils.http.application;
+package xyz.wickc.networkutils.http.application.aria2;
 
 import xyz.wickc.networkutils.exception.NetworkException;
 

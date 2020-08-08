@@ -131,7 +131,7 @@ public class HttpRequestTest {
     public void customizeTest() throws Exception{
         URL url = new URL(TEST_URL);
         URLConnection urlConnection = url.openConnection(
-                new Proxy(Proxy.Type.HTTP,new InetSocketAddress(8888))
+//                new Proxy(Proxy.Type.HTTP,new InetSocketAddress(8888))
         );
 
         CustomizeHttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getCustomizeHttpNetworkUtils((HttpURLConnection) urlConnection);
@@ -140,7 +140,7 @@ public class HttpRequestTest {
         System.out.println(new String(responseData.getRequestBodyData()));
     }
 
-    @Test
+//    @Test
     public void formUploader() throws MalformedURLException {
         ConnectionFactory.setProxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress(8888)));
         ByteArrayOutputStream outputStream = null;

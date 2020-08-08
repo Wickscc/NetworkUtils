@@ -37,7 +37,8 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
 
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpNetworkUtils.class);
 
-    public SimpleHttpNetworkUtils() { }
+    public SimpleHttpNetworkUtils() {
+    }
 
     @Override
     public NetworkResponseData readPage(NetworkRequestData requestData) {
@@ -47,7 +48,11 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         try {
             connection.connect();
         } catch (IOException e) {
-            throw new RuntimeException("连接URL的时候出现错误!", e);
+            if(requestData != null){
+                throw new RuntimeException("连接URL[" + requestData.getUrl() + "]的时候出现错误!", e);
+            }else{
+                throw new RuntimeException("连接URL的时候出现错误!", e);
+            }
         }
 
 //        返回数据处理并且返回
@@ -57,7 +62,7 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
             InputStream inputStream;
             boolean b = false;
 
-            if (requestData != null){
+            if (requestData != null) {
                 b = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> responseCode == i);
             }
 

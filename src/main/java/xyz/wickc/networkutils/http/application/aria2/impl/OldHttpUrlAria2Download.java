@@ -1,4 +1,4 @@
-package xyz.wickc.networkutils.http.application.impl;
+package xyz.wickc.networkutils.http.application.aria2.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -10,21 +10,21 @@ import xyz.wickc.networkutils.domain.NetworkResponseData;
 import xyz.wickc.networkutils.domain.RequestMethod;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.http.HttpNetworkUtilsFactory;
-import xyz.wickc.networkutils.http.application.Aria2Download;
+import xyz.wickc.networkutils.http.application.aria2.Aria2Download;
 
-import java.net.Proxy;
 import java.net.URL;
-import java.util.Map;
 
 /**
  * Created on 2020/4/25
  *
  * 使用 Aria2 来下载 HTTP 协议的资源
  *
+ * 此类已被弃用!
+ *
  * @author wicks
  * @since 1.8
  */
-public class HttpUrlAria2Download implements Aria2Download {
+public class OldHttpUrlAria2Download implements Aria2Download {
     /**
      * 连接 Aria2 JsonRpc API 的地址
      */
@@ -51,16 +51,16 @@ public class HttpUrlAria2Download implements Aria2Download {
      */
     private RequestMethod requestMethod;
 
-    private static Logger logger = LoggerFactory.getLogger(HttpUrlAria2Download.class);
+    private static Logger logger = LoggerFactory.getLogger(OldHttpUrlAria2Download.class);
 
-    public HttpUrlAria2Download(URL aria2ConnectionUrl, URL proxy, String token, RequestMethod requestMethod) {
+    public OldHttpUrlAria2Download(URL aria2ConnectionUrl, URL proxy, String token, RequestMethod requestMethod) {
         this.aria2ConnectionUrl = aria2ConnectionUrl;
         this.proxy = proxy;
         this.token = token;
         this.requestMethod = requestMethod;
     }
 
-    public HttpUrlAria2Download(URL aria2ConnectionUrl, String token, RequestMethod requestMethod) {
+    public OldHttpUrlAria2Download(URL aria2ConnectionUrl, String token, RequestMethod requestMethod) {
         this.aria2ConnectionUrl = aria2ConnectionUrl;
         this.token = token;
         this.requestMethod = requestMethod;

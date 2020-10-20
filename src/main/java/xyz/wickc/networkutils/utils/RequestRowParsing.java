@@ -1,5 +1,6 @@
 package xyz.wickc.networkutils.utils;
 
+import sun.nio.ch.Net;
 import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.RequestMethod;
 
@@ -108,6 +109,50 @@ public class RequestRowParsing {
         return requestData;
     }
 
+    /**
+     * 将 NetworkRequestData 逆向转换成 HTTP ROW 格式的数据
+     * @param requestData HTTP 请求对象
+     * @return HTTP ROW
+     */
+    public static String parsingToRow(NetworkRequestData requestData){
+        StringBuilder stringBuilder = new StringBuilder();
+
+//        HTTP 请求首行
+        URL dataUrl = requestData.getUrl();
+        String firstRow = requestData.getRequestMethod().name().toUpperCase() + " " + dataUrl.toString() + " HTTP/1.1";
+
+        stringBuilder.append(firstRow);
+        stringBuilder.append("\n");
+
+        requestData.addHeader("Host",dataUrl.getHost());
+
+        Map<String, Set<String>> headerMap = requestData.getHeaderMap();
+        Set<String> headerKeySet = headerMap.keySet();
+        for (String headerKey : headerKeySet) {
+            Set<String> valueSet = headerMap.get(headerKey);
+            for (String value : valueSet) {
+                stringBuilder.append(headerKey).append(": ").append(value);
+                stringBuilder.append("\n");
+            }
+        }
+
+        boolean hasRequestBody = requestData.getRequestBodyData() != null && requestData.getRequestBodyData().length != 0;
+        if (requestData.getRequestMethod() == RequestMethod.POST && hasRequestBody) {
+            stringBuilder.append("\n");
+            stringBuilder.append(
+                    new String(requestData.getRequestBodyData())
+            );
+        }
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 将文件每一行都读取出来存储在 List 中
+     * @param reader 文件的 reader 流
+     * @return HTTP HEAD List
+     * @throws IOException 读取文件时错误
+     */
     private static List<String> readRowFile(Reader reader) throws IOException {
 
         if (reader == null) {

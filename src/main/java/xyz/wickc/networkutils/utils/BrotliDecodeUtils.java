@@ -3,6 +3,8 @@ package xyz.wickc.networkutils.utils;
 import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
 import org.apache.commons.compress.compressors.brotli.BrotliUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,6 +17,8 @@ import java.io.IOException;
  * @since 1.8
  */
 public class BrotliDecodeUtils {
+    private static Logger logger = LoggerFactory.getLogger(BrotliDecodeUtils.class);
+
     public static byte[] deCodeBrotliRespBody(byte[] data){
         BrotliCompressorInputStream inputStream = null;
 
@@ -29,8 +33,13 @@ public class BrotliDecodeUtils {
         try {
             IOUtils.copy(inputStream,outputStream);
         } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println(new String(data));
+            logger.warn("解码 BR 数据时出现错误!");
+
+            if (logger.isDebugEnabled()){
+                e.printStackTrace();
+            }
+
+            return new byte[0];
         }
 
 

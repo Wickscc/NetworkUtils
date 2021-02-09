@@ -39,7 +39,7 @@ public class BrotliDecodeUtils {
                 e.printStackTrace();
             }
 
-            return new byte[0];
+            return data;
         }
 
 

@@ -31,7 +31,7 @@ import java.util.UUID;
  * @since 1.8
  */
 public class HttpRequestTest {
-    private static final String TEST_URL = "https://baidu.com";
+    private static final String TEST_URL = "https://weibo.com";
     private static final String UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36";
 
     private static Logger logger = LoggerFactory.getLogger(HttpRequestTest.class);

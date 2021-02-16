@@ -124,7 +124,12 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         logger.debug("Request Header : " + headerMap.toString());
         logger.debug("Request Method : " + requestMethod.name());
 
-        HttpURLConnection connection = (HttpURLConnection) ConnectionFactory.getUrlConnection(url);
+        HttpURLConnection connection = null;
+        if (requestData.isUseProxy()){
+            connection = (HttpURLConnection) ConnectionFactory.getUrlConnection(url);
+        }else {
+            connection = (HttpURLConnection) ConnectionFactory.getNotProxyUrlConnection(url);
+        }
 
 //        初始化设置,设置请求头 请求方法 和发送数据等操作
         try {

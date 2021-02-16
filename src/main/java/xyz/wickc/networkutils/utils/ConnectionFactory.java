@@ -48,4 +48,12 @@ public class ConnectionFactory {
 
         return urlConnection;
     }
+
+    public static URLConnection getNotProxyUrlConnection(URL url){
+        try {
+            return url.openConnection();
+        } catch (IOException e) {
+            throw new RuntimeException("URL对象开启 Connection 失败!",e);
+        }
+    }
 }

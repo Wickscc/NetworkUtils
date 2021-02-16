@@ -32,6 +32,12 @@ public class NetworkRequestData extends NetworkData{
      */
     private String queryData;
 
+    /**
+     * 如果 ConnectionFactory 存在 Proxy 设置的情况下, 需不需要使用 Proxy
+     * 默认使用!
+     */
+    private boolean useProxy = true;
+
     public int[] getTrustStatusCode() {
         if (trustStatusCode == null){
             return new int[0];
@@ -136,5 +142,13 @@ public class NetworkRequestData extends NetworkData{
 //        }
 
         return super.getUrl();
+    }
+
+    public void setUseProxy(boolean useProxy) {
+        this.useProxy = useProxy;
+    }
+
+    public boolean isUseProxy() {
+        return useProxy;
     }
 }

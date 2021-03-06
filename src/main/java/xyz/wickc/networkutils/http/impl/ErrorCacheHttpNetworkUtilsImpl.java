@@ -6,6 +6,8 @@ import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkResponseData;
 import xyz.wickc.networkutils.http.ErrorCatchHttpNetworkUtils;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
+import xyz.wickc.networkutils.http.entity.HttpErrorDeterminer;
+import xyz.wickc.networkutils.http.entity.HttpErrorHandler;
 
 /**
  * Created on 2020/7/2
@@ -18,6 +20,8 @@ public class ErrorCacheHttpNetworkUtilsImpl implements ErrorCatchHttpNetworkUtil
     private final HttpNetworkUtils httpNetworkUtils;
 
     private int MAX_TRY = 3;
+    private HttpErrorHandler errorHandler;
+    private HttpErrorDeterminer httpErrorDeterminer;
 
     public ErrorCacheHttpNetworkUtilsImpl(HttpNetworkUtils httpNetworkUtils) {
         this.httpNetworkUtils = httpNetworkUtils;
@@ -55,5 +59,20 @@ public class ErrorCacheHttpNetworkUtilsImpl implements ErrorCatchHttpNetworkUtil
         }
 
         return responseData;
+    }
+
+    @Override
+    public void setMaxTry(int maxTry) {
+        this.MAX_TRY = maxTry;
+    }
+
+    @Override
+    public void setErrorHandler(HttpErrorHandler errorHandler) {
+
+    }
+
+    @Override
+    public void setErrorDeterminer(HttpErrorDeterminer errorDeterminer) {
+
     }
 }

@@ -93,3 +93,5 @@ public class TestUploadFile{
 ### 使用方式
 1. 直接使用 Releases 中提供的 Jar 包 (可能会更新较慢)
 2. 通过 ```git clone``` 的方式克隆到本地后自行用 Maven 安装到本地仓库使用 
+
+测试冲突情况!

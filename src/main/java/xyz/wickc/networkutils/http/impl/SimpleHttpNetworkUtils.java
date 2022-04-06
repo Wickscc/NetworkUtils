@@ -136,6 +136,7 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
             connection.setRequestMethod(requestMethod.name());
             connection.setDoInput(true);
             connection.setDoOutput(true);
+            connection.setReadTimeout(1000 * 5);
 
             Set<String> headerKeySet = headerMap.keySet();
             for (String headerKey : headerKeySet) {

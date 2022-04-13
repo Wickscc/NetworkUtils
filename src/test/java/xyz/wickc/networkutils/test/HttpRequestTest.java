@@ -1,6 +1,5 @@
 package xyz.wickc.networkutils.test;
 
-import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +11,6 @@ import xyz.wickc.networkutils.domain.RequestMethod;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.http.HttpNetworkUtilsFactory;
 import xyz.wickc.networkutils.http.impl.CustomizeHttpNetworkUtils;
-import xyz.wickc.networkutils.http.impl.FormUploadHttpNetworkUtils;
 import xyz.wickc.networkutils.utils.ConnectionFactory;
 
 import java.io.ByteArrayOutputStream;

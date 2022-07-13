@@ -34,12 +34,7 @@ public class BrotliDecodeUtils {
             IOUtils.copy(inputStream,outputStream);
         } catch (IOException e) {
             logger.warn("解码 BR 数据时出现错误!");
-
-            if (logger.isDebugEnabled()){
-                e.printStackTrace();
-            }
-
-            return data;
+            throw new RuntimeException(e);
         }
 
 

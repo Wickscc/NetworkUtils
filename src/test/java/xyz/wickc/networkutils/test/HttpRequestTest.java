@@ -12,6 +12,7 @@ import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.http.HttpNetworkUtilsFactory;
 import xyz.wickc.networkutils.http.impl.CustomizeHttpNetworkUtils;
 import xyz.wickc.networkutils.utils.ConnectionFactory;
+import xyz.wickc.networkutils.utils.SslUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -29,17 +30,27 @@ import java.util.UUID;
  * @since 1.8
  */
 public class HttpRequestTest {
-    private static final String TEST_URL = "https://weibo.com";
+    private static final String TEST_URL = "https://www.baidu.com/";
     private static final String UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36";
 
     private static Logger logger = LoggerFactory.getLogger(HttpRequestTest.class);
+
+    static {
+        ConnectionFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 8888)));
+
+        try {
+            SslUtils.ignoreSsl();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void httpRequestTest() throws MalformedURLException {
         HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getHttpNetworkUtils();
 
         NetworkRequestData requestData = new NetworkRequestData(
-                new URL(TEST_URL),RequestMethod.GET
+                new URL(TEST_URL), RequestMethod.GET
         );
 
         requestData.setUserAgent(UA);
@@ -58,7 +69,7 @@ public class HttpRequestTest {
 
         for (int i = 0; i < 5; i++) {
             NetworkRequestData requestData = new NetworkRequestData(
-                    new URL(TEST_URL),RequestMethod.GET
+                    new URL(TEST_URL), RequestMethod.GET
             );
 
             requestData.setUserAgent(UA);
@@ -83,7 +94,7 @@ public class HttpRequestTest {
 
         for (int i = 0; i < 5; i++) {
             NetworkRequestData requestData = new NetworkRequestData(
-                    new URL(TEST_URL),RequestMethod.GET
+                    new URL(TEST_URL), RequestMethod.GET
             );
 
             requestData.setUserAgent(UA);
@@ -109,7 +120,7 @@ public class HttpRequestTest {
         HttpNetworkUtils httpNetworkUtils = HttpNetworkUtilsFactory.getHttpNetworkUtils();
 
         NetworkRequestData requestData = new NetworkRequestData(
-                new URL(url),RequestMethod.POST
+                new URL(url), RequestMethod.POST
         );
 
         requestData.setUserAgent(UA);
@@ -126,7 +137,7 @@ public class HttpRequestTest {
     }
 
     @Test
-    public void customizeTest() throws Exception{
+    public void customizeTest() throws Exception {
         URL url = new URL(TEST_URL);
         URLConnection urlConnection = url.openConnection(
 //                new Proxy(Proxy.Type.HTTP,new InetSocketAddress(8888))
@@ -140,27 +151,26 @@ public class HttpRequestTest {
 
     @Test
     public void formUploader() throws MalformedURLException {
-        ConnectionFactory.setProxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress(8888)));
         ByteArrayOutputStream outputStream = null;
 
         try {
             InputStream inputStream = new FileInputStream("C:\\Users\\wicks\\Downloads\\weibo_cache_ea83aa502eaf7f1fe225d2cde6af4365.jpg");
             outputStream = new ByteArrayOutputStream();
-            IOUtils.copy(inputStream,outputStream);
+            IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         FormUploadNetworkRequestData requestData = new FormUploadNetworkRequestData(
-                new URL(" https://weibo.local.wickc.xyz/api/face_endpoint?result_len=100&face_list_type=" + "twitter")
+                new URL(" https://weibo.local.wickc.xyz/api/face_endpoint/parse_photo?result_len=100&face_list_type=" + "twitter")
         );
 
 //        requestData.setQueryData("key=23230f4d3b24465184bf8c2cac7c14de");
-        requestData.addTextFrom("fileName","WicksImages.png");
-        requestData.addTextFrom("username","WicksChen");
-        requestData.addUploaderForm("images/jpeg","WicksImages.jpg","file",outputStream.toByteArray());
-        requestData.setTrustStatusCode(404,400);
-        requestData.addHeader("token","405Jkg/npueknD6r5WKA7OlMNCYdJIT4UnXUYaa8AGfUOzzDa8Vxx43zWOwJGE3ccBLwjNh+16F0HYQSYxoW8C1cBTUwoPXkoxCP7hCh2rE=");
+        requestData.addTextFrom("fileName", "WicksImages.png");
+        requestData.addTextFrom("username", "WicksChen");
+        requestData.addUploaderForm("images/jpeg", "WicksImages.jpg", "pic", outputStream.toByteArray());
+        requestData.setTrustStatusCode(404, 400);
+        requestData.addHeader("token", "405Jkg/npueknD6r5WKA7OlMNCYdJIT4UnXUYaa8AGfUOzzDa8Vxx43zWOwJGE3ccBLwjNh+16F0HYQSYxoW8C1cBTUwoPXkoxCP7hCh2rE=");
 
 //        System.out.println(new String(requestData.getRequestBodyData()));
 

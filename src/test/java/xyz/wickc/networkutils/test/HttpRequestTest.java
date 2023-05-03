@@ -138,13 +138,13 @@ public class HttpRequestTest {
         System.out.println(new String(responseData.getRequestBodyData()));
     }
 
-//    @Test
+    @Test
     public void formUploader() throws MalformedURLException {
         ConnectionFactory.setProxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress(8888)));
         ByteArrayOutputStream outputStream = null;
 
         try {
-            InputStream inputStream = new FileInputStream("E:\\Users\\wicks\\Pictures\\PS WP_20151126_15_14_46_Pro.jpg");
+            InputStream inputStream = new FileInputStream("C:\\Users\\wicks\\Downloads\\weibo_cache_ea83aa502eaf7f1fe225d2cde6af4365.jpg");
             outputStream = new ByteArrayOutputStream();
             IOUtils.copy(inputStream,outputStream);
         } catch (IOException e) {
@@ -152,7 +152,7 @@ public class HttpRequestTest {
         }
 
         FormUploadNetworkRequestData requestData = new FormUploadNetworkRequestData(
-                new URL("http://127.0.0.1:8080/Images?key=" + "07e8ea7de8734ba089d4ee152f806761")
+                new URL(" https://weibo.local.wickc.xyz/api/face_endpoint?result_len=100&face_list_type=" + "twitter")
         );
 
 //        requestData.setQueryData("key=23230f4d3b24465184bf8c2cac7c14de");

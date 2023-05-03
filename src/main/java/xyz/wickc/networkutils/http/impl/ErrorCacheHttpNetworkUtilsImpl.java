@@ -37,20 +37,20 @@ public class ErrorCacheHttpNetworkUtilsImpl implements ErrorCatchHttpNetworkUtil
         NetworkResponseData responseData = null;
 
         int teyLength = 0;
-        while (true){
+        while (true) {
             try {
                 responseData = httpNetworkUtils.readPage(requestData);
             } catch (Exception e) {
                 teyLength += 1;
 
                 logger.debug("请求时发生错误 \n 错误类型: " + e.getClass().getName() + "\n 错误信息: " + e.getMessage());
-                if (logger.isDebugEnabled()){
+                if (logger.isDebugEnabled()) {
                     e.printStackTrace();
                 }
 
-                if (teyLength == MAX_TRY){
-                    throw new RuntimeException("URL 链接失败! URL地址: " + requestData.getUrl().toString(),e);
-                }else{
+                if (teyLength == MAX_TRY) {
+                    throw new RuntimeException("URL 链接失败! URL地址: " + requestData.getUrl().toString(), e);
+                } else {
                     continue;
                 }
             }
@@ -59,6 +59,11 @@ public class ErrorCacheHttpNetworkUtilsImpl implements ErrorCatchHttpNetworkUtil
         }
 
         return responseData;
+    }
+
+    @Override
+    public void setReadTimeOut(Integer readTimeOut) {
+        httpNetworkUtils.setReadTimeOut(readTimeOut);
     }
 
     @Override

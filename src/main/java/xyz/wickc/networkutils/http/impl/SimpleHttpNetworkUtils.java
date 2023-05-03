@@ -35,6 +35,11 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
      */
     protected static final String GZIP_CONTENT_TYPE = "gzip";
 
+    /**
+     * 超时时间
+     */
+    private Integer READ_TIME_OUT = 1000 * 3;
+
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpNetworkUtils.class);
 
     public SimpleHttpNetworkUtils() {
@@ -48,9 +53,9 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         try {
             connection.connect();
         } catch (IOException e) {
-            if(requestData != null){
+            if (requestData != null) {
                 throw new RuntimeException("连接URL[" + requestData.getUrl() + "]的时候出现错误!", e);
-            }else{
+            } else {
                 throw new RuntimeException("连接URL的时候出现错误!", e);
             }
         }
@@ -83,6 +88,11 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         } catch (IOException e) {
             throw new RuntimeException("处理响应信息时出错!", e);
         }
+    }
+
+    @Override
+    public void setReadTimeOut(Integer readTimeOut) {
+        this.READ_TIME_OUT = readTimeOut;
     }
 
     /**
@@ -125,9 +135,9 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         logger.debug("Request Method : " + requestMethod.name());
 
         HttpURLConnection connection = null;
-        if (requestData.isUseProxy()){
+        if (requestData.isUseProxy()) {
             connection = (HttpURLConnection) ConnectionFactory.getUrlConnection(url);
-        }else {
+        } else {
             connection = (HttpURLConnection) ConnectionFactory.getNotProxyUrlConnection(url);
         }
 
@@ -213,6 +223,8 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
         ByteArrayInputStream requestBodyInputStream = null;
 
         if (requestBody != null && requestBody.length != 0) {
+            connection.setReadTimeout(READ_TIME_OUT);
+
             connectionOutputStream = connection.getOutputStream();
             requestBodyInputStream = new ByteArrayInputStream(requestBody);
 

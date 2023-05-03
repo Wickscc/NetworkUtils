@@ -17,24 +17,24 @@ public class FormUploadNetworkRequestData extends NetworkRequestData {
     private static final String SPLINE = "--------------------------";
 
     private Map<String, byte[]> uploaderForm = new HashMap<>();
-    private Map<String,String> textFrom = new HashMap<>();
+    private Map<String, String> textFrom = new HashMap<>();
     private String delimiter;
 
     /**
      * 默认情况下,需要使用 URL 地址加上请求方法来构造请求对象
      *
-     * @param url           URL 地址
+     * @param url URL 地址
      */
     public FormUploadNetworkRequestData(URL url) {
         super(url, RequestMethod.POST);
     }
 
-    public void addUploaderForm(String contentType,String fileName,String key, byte[] value){
-        uploaderForm.put(key + "&" + contentType + "&" + fileName,value);
+    public void addUploaderForm(String contentType, String fileName, String name, byte[] value) {
+        uploaderForm.put(name + "&" + contentType + "&" + fileName, value);
     }
 
-    public void addTextFrom(String key,String value){
-        textFrom.put(key,value);
+    public void addTextFrom(String key, String value) {
+        textFrom.put(key, value);
     }
 
     /**
@@ -62,6 +62,10 @@ public class FormUploadNetworkRequestData extends NetworkRequestData {
         return uploaderForm;
     }
 
+    /**
+     * 不推荐直接设置 Map, 很有可能会报错...
+     * @param uploaderForm map
+     */
     public void setUploaderForm(Map<String, byte[]> uploaderForm) {
         this.uploaderForm = uploaderForm;
     }
@@ -76,10 +80,10 @@ public class FormUploadNetworkRequestData extends NetworkRequestData {
 
     public String getDelimiter() {
         String temp = null;
-        if (delimiter == null || delimiter.isEmpty()){
-            temp = UUID.randomUUID().toString().replace("-","");
+        if (delimiter == null || delimiter.isEmpty()) {
+            temp = UUID.randomUUID().toString().replace("-", "");
             delimiter = temp;
-        }else {
+        } else {
             temp = this.delimiter;
         }
 
@@ -100,12 +104,13 @@ public class FormUploadNetworkRequestData extends NetworkRequestData {
      *
      * @return
      */
-    public String getContentType(){
+    public String getContentType() {
         return "multipart/form-data; boundary=" + getDelimiter();
     }
 
     /**
      * 强制使用 POST 方法,设置什么都没用!
+     *
      * @param requestMethod requestMethod
      */
     @Override
@@ -126,7 +131,6 @@ public class FormUploadNetworkRequestData extends NetworkRequestData {
 
         return headerMap;
     }
-
 
 
     @Override

@@ -23,26 +23,32 @@ public class CacheHttpNetworkUtilsImpl implements CacheHttpNetworkUtils {
 
     /**
      * 使用包装类的方式来增强
+     *
      * @param requestData 请求数据
-     * @return 如果缓存被命中,那么返回的是缓存的内容!
+     * @return 如果缓存被命中, 那么返回的是缓存的内容!
      */
     @Override
     public NetworkResponseData readPage(NetworkRequestData requestData) {
         String strongKey = requestData.getUrl().toString();
 
         NetworkResponseData strongRequest = cacheHttpRequest.getStrongRequest(strongKey);
-        if (strongRequest != null){
+        if (strongRequest != null) {
             return strongRequest;
         }
 
         NetworkResponseData responseData = httpNetworkUtils.readPage(requestData);
-        if (responseData.getCookieStr() != null){
+        if (responseData.getCookieStr() != null) {
             requestData.setCookie(responseData.getCookieStr());
         }
 
-        cacheHttpRequest.strongRequest(requestData.getUrl().toString(),responseData);
+        cacheHttpRequest.strongRequest(requestData.getUrl().toString(), responseData);
 
 
         return responseData;
+    }
+
+    @Override
+    public void setReadTimeOut(Integer readTimeOut) {
+        httpNetworkUtils.setReadTimeOut(readTimeOut);
     }
 }

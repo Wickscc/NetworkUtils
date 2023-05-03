@@ -18,5 +18,9 @@ public interface HttpNetworkUtils {
      */
     NetworkResponseData readPage(NetworkRequestData requestData);
 
-
+    /**
+     * 设置读取超时时间
+     * @param readTimeOut
+     */
+    void setReadTimeOut(Integer readTimeOut);
 }

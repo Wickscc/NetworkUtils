@@ -54,6 +54,7 @@ public class HttpRequestTest {
         );
 
         requestData.setUserAgent(UA);
+        requestData.setAllTrust(true);
 
         NetworkResponseData responseData = httpNetworkUtils.readPage(requestData);
 
@@ -73,6 +74,7 @@ public class HttpRequestTest {
             );
 
             requestData.setUserAgent(UA);
+            requestData.setAllTrust(true);
 
             long startTime = System.currentTimeMillis();
             NetworkResponseData responseData = httpNetworkUtils.readPage(requestData);
@@ -98,6 +100,7 @@ public class HttpRequestTest {
             );
 
             requestData.setUserAgent(UA);
+            requestData.setAllTrust(true);
 
             long startTime = System.currentTimeMillis();
             NetworkResponseData responseData = httpNetworkUtils.readPage(requestData);

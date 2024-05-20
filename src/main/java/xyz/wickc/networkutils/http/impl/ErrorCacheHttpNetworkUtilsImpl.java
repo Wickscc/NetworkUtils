@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkResponseData;
+import xyz.wickc.networkutils.exception.HttpRequestException;
 import xyz.wickc.networkutils.http.ErrorCatchHttpNetworkUtils;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.http.entity.HttpErrorDeterminer;
@@ -49,7 +50,7 @@ public class ErrorCacheHttpNetworkUtilsImpl implements ErrorCatchHttpNetworkUtil
                 }
 
                 if (teyLength == MAX_TRY) {
-                    throw new RuntimeException("URL 链接失败! URL地址: " + requestData.getUrl().toString(), e);
+                    throw e;
                 } else {
                     continue;
                 }

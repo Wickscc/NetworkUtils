@@ -14,6 +14,7 @@ import xyz.wickc.networkutils.utils.HttpResponseDataBuilder;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -67,16 +68,19 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
 //        返回数据处理并且返回
         try {
             InputStream inputStream = null;
-            boolean matchTrustCode = false;
 
             responseCode = connection.getResponseCode();
 
-            if (requestData != null) {
-                int finalResponseCode = responseCode;
-                matchTrustCode = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> finalResponseCode == i);
+            int finalResponseCode = responseCode;
+            boolean matchTrustCode = responseCode == 200 || Arrays.stream(requestData.getTrustStatusCode()).anyMatch((i) -> i == finalResponseCode);
+
+//            如果第一个 TrustCode 是 -1 所有为可信...
+//            TODO 为了兼容 CustomizeHttpNetworkUtils 做了非空判断, 是否优化?
+            if (requestData != null && requestData.isAllTrust()) {
+                matchTrustCode = true;
             }
 
-            if (responseCode != 200 && matchTrustCode) {
+            if (connection.getErrorStream() != null) {
                 inputStream = connection.getErrorStream();
             } else {
                 inputStream = connection.getInputStream();
@@ -88,8 +92,15 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
             logger.debug("Response BodyLength : " + responseData.length);
             logger.debug("Response Header : " + respHeaderMap);
             logger.debug("Response Code : " + responseCode);
+            logger.debug("Response Body : " + new String(responseData, StandardCharsets.UTF_8));
 
-            return HttpResponseDataBuilder.builderNetworkResponseData(responseData, respHeaderMap, responseCode);
+            NetworkResponseData networkResponseData = HttpResponseDataBuilder.builderNetworkResponseData(responseData, respHeaderMap, responseCode);
+
+            if (!matchTrustCode) {
+                throw new HttpRequestException(String.format("返回状态码 [%s] 不可信, 响应体长度 [%s]...", responseCode, responseData.length), responseCode, responseData, networkResponseData);
+            }
+
+            return networkResponseData;
         } catch (IOException e) {
             throw new HttpRequestException("处理响应信息时出错!", e, responseCode, responseData);
         }

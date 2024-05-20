@@ -35,21 +35,35 @@ public class NetworkData {
      */
     private Integer readTimeout = 60 * 60 * 1000;
 
-    protected NetworkData(URL url,RequestMethod requestMethod) {
+    /**
+     * 忽略默认的错误处理机制, 不论状态码如何都返回正常的结果
+     */
+    private boolean allTrust = false;
+
+    public boolean isAllTrust() {
+        return allTrust;
+    }
+
+    public void setAllTrust(boolean allTrust) {
+        this.allTrust = allTrust;
+    }
+
+    protected NetworkData(URL url, RequestMethod requestMethod) {
         this.url = url;
         this.requestMethod = requestMethod;
     }
 
-    protected NetworkData(){
+    protected NetworkData() {
 
     }
 
     /**
      * 添加请求头参数
-     * @param key 请求头键
+     *
+     * @param key   请求头键
      * @param value 请求头值
      */
-    public void addHeader(String key,String ... value){
+    public void addHeader(String key, String... value) {
         Set<String> strings = this.headerMap.get(key);
 
         if (strings == null) {
@@ -58,7 +72,7 @@ public class NetworkData {
 
         strings.addAll(Arrays.asList(value));
 
-        this.headerMap.put(key,strings);
+        this.headerMap.put(key, strings);
     }
 
     public Map<String, Set<String>> getHeaderMap() {

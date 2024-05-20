@@ -30,6 +30,11 @@ public class NetworkData {
      */
     private URL url;
 
+    /**
+     * 超时时间
+     */
+    private Integer readTimeout = 60 * 60 * 1000;
+
     protected NetworkData(URL url,RequestMethod requestMethod) {
         this.url = url;
         this.requestMethod = requestMethod;
@@ -86,5 +91,13 @@ public class NetworkData {
 
     public void setUrl(URL url) {
         this.url = url;
+    }
+
+    public Integer getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(Integer readTimeout) {
+        this.readTimeout = readTimeout;
     }
 }

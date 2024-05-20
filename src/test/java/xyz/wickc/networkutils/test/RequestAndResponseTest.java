@@ -53,7 +53,7 @@ public class RequestAndResponseTest {
 
     @Test
     public void rowRequestTestA() throws IOException {
-        NetworkRequestData requestData = RequestRowParsing.parsingRowRequest(new FileReader("src/test/resources/TestRowRequestData.txt"));
+        NetworkRequestData requestData = RequestRowParsing.parsingRowRequest(new FileReader("src/test/resources/JTRequestTemplate.txt"));
 
         logger.info("RequestHeader: " + requestData.getHeaderMap());
         logger.info("RequestUrl: " + requestData.getUrl().toString());
@@ -71,7 +71,7 @@ public class RequestAndResponseTest {
 
     @Test
     public void formUploadRequestTest() throws Exception{
-        InputStream inputStream = new FileInputStream("src/test/resources/ALSTON - LOGO W.png");
+        InputStream inputStream = new FileInputStream("D:\\Users\\wicks\\Downloads\\weibo_cache_2d83a6f6b4b0d84f449ae1e06244445c.jpg");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         IOUtils.copy(inputStream,outputStream);

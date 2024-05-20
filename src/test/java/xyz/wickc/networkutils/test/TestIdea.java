@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.rmi.runtime.Log;
 import xyz.wickc.networkutils.domain.FormUploadNetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkData;
 import xyz.wickc.networkutils.domain.NetworkRequestData;
@@ -46,7 +45,7 @@ public class TestIdea {
 
     @Test
     public void testOutput() throws IOException {
-        InputStream inputStream = new FileInputStream("src/test/resources/ALSTON - LOGO W.png");
+        InputStream inputStream = new FileInputStream("D:\\Users\\wicks\\Downloads\\weibo_cache_2d83a6f6b4b0d84f449ae1e06244445c.jpg");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         outputStream.write("------Test 231241254213513551\r\nContent-Type:images/jpeg\r\n\r\n".getBytes());

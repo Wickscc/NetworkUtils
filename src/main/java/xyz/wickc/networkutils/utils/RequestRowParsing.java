@@ -1,6 +1,5 @@
 package xyz.wickc.networkutils.utils;
 
-import sun.nio.ch.Net;
 import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.RequestMethod;
 

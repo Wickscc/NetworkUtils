@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import xyz.wickc.networkutils.domain.NetworkRequestData;
 import xyz.wickc.networkutils.domain.NetworkResponseData;
 import xyz.wickc.networkutils.domain.RequestMethod;
+import xyz.wickc.networkutils.exception.HttpRequestException;
 import xyz.wickc.networkutils.http.HttpNetworkUtils;
 import xyz.wickc.networkutils.utils.ConnectionFactory;
 import xyz.wickc.networkutils.utils.DecodeUtils;
@@ -38,7 +39,7 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
     /**
      * 超时时间
      */
-    private Integer READ_TIME_OUT = 1000 * 3;
+    private Integer READ_TIME_OUT = 1000 * 60;
 
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpNetworkUtils.class);
 
@@ -60,33 +61,37 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
             }
         }
 
+        int responseCode = -1;
+        byte[] responseData = null;
+
 //        返回数据处理并且返回
         try {
-            int responseCode = connection.getResponseCode();
+            InputStream inputStream = null;
+            boolean matchTrustCode = false;
 
-            InputStream inputStream;
-            boolean b = false;
+            responseCode = connection.getResponseCode();
 
             if (requestData != null) {
-                b = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> responseCode == i);
+                int finalResponseCode = responseCode;
+                matchTrustCode = Arrays.stream(requestData.getTrustStatusCode()).anyMatch(i -> finalResponseCode == i);
             }
 
-            if (responseCode != 200 && b) {
+            if (responseCode != 200 && matchTrustCode) {
                 inputStream = connection.getErrorStream();
             } else {
                 inputStream = connection.getInputStream();
             }
 
             Map<String, List<String>> respHeaderMap = connection.getHeaderFields();
-            byte[] bytes = parsingResponse(inputStream, respHeaderMap);
+            responseData = parsingResponse(inputStream, respHeaderMap);
 
-            logger.debug("Response BodyLength : " + bytes.length);
-            logger.debug("Response Header : " + respHeaderMap.toString());
+            logger.debug("Response BodyLength : " + responseData.length);
+            logger.debug("Response Header : " + respHeaderMap);
             logger.debug("Response Code : " + responseCode);
 
-            return HttpResponseDataBuilder.builderNetworkResponseData(bytes, respHeaderMap, responseCode);
+            return HttpResponseDataBuilder.builderNetworkResponseData(responseData, respHeaderMap, responseCode);
         } catch (IOException e) {
-            throw new RuntimeException("处理响应信息时出错!", e);
+            throw new HttpRequestException("处理响应信息时出错!", e, responseCode, responseData);
         }
     }
 
@@ -146,7 +151,11 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
             connection.setRequestMethod(requestMethod.name());
             connection.setDoInput(true);
             connection.setDoOutput(true);
-            connection.setReadTimeout(1000 * 5);
+
+            connection.setReadTimeout(requestData.getReadTimeout());
+            connection.setConnectTimeout(requestData.getReadTimeout());
+
+            logger.debug("ReadTimeOut: " + connection.getReadTimeout());
 
             Set<String> headerKeySet = headerMap.keySet();
             for (String headerKey : headerKeySet) {
@@ -158,7 +167,7 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
 
 //            当 Connection 获取到 outputStream 的时候,自动将请求方式改成 POST
 //            outputData(requestBody,connection.getOutputStream());
-            outputData(requestBody, connection);
+            outputData(requestData.getReadTimeout(), requestBody, connection);
         } catch (ProtocolException e) {
             throw new RuntimeException("设置参数时出错", e);
         } catch (IOException e) {
@@ -218,12 +227,12 @@ public class SimpleHttpNetworkUtils implements HttpNetworkUtils {
      * @param connection  HttpURLConnection 对象,用于获取 outputStream
      * @throws IOException 输出时发生错误
      */
-    protected void outputData(byte[] requestBody, HttpURLConnection connection) throws IOException {
+    protected void outputData(int readTimeOut, byte[] requestBody, HttpURLConnection connection) throws IOException {
         OutputStream connectionOutputStream = null;
         ByteArrayInputStream requestBodyInputStream = null;
 
         if (requestBody != null && requestBody.length != 0) {
-            connection.setReadTimeout(READ_TIME_OUT);
+            connection.setReadTimeout(readTimeOut);
 
             connectionOutputStream = connection.getOutputStream();
             requestBodyInputStream = new ByteArrayInputStream(requestBody);

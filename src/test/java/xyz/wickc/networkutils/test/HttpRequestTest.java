@@ -154,7 +154,7 @@ public class HttpRequestTest {
         ByteArrayOutputStream outputStream = null;
 
         try {
-            InputStream inputStream = new FileInputStream("C:\\Users\\wicks\\Downloads\\weibo_cache_ea83aa502eaf7f1fe225d2cde6af4365.jpg");
+            InputStream inputStream = new FileInputStream("D:\\Users\\wicks\\Downloads\\weibo_cache_2d83a6f6b4b0d84f449ae1e06244445c.jpg");
             outputStream = new ByteArrayOutputStream();
             IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
@@ -171,6 +171,8 @@ public class HttpRequestTest {
         requestData.addUploaderForm("images/jpeg", "WicksImages.jpg", "pic", outputStream.toByteArray());
         requestData.setTrustStatusCode(404, 400);
         requestData.addHeader("token", "405Jkg/npueknD6r5WKA7OlMNCYdJIT4UnXUYaa8AGfUOzzDa8Vxx43zWOwJGE3ccBLwjNh+16F0HYQSYxoW8C1cBTUwoPXkoxCP7hCh2rE=");
+        requestData.setReadTimeout(1000 * 10 * 6);
+//        requestData.setUseProxy(false);
 
 //        System.out.println(new String(requestData.getRequestBodyData()));
 
